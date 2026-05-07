@@ -1,0 +1,4 @@
+../Src/i2c.c:29:6:i2c_init	4	static
+../Src/i2c.c:46:6:i2c_scan	24	static
+../Src/i2c.c:73:6:i2c_write	16	static
+../Src/i2c.c:94:6:i2c_read	24	static

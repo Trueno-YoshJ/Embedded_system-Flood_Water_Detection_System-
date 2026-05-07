@@ -1,0 +1,6 @@
+../Src/gpio.c:13:6:gpio_init	4	static
+../Src/gpio.c:52:6:gpio_trigger_high	16	static
+../Src/gpio.c:59:6:gpio_trigger_low	16	static
+../Src/gpio.c:66:5:gpio_read_echo	16	static
+../Src/gpio.c:73:6:gpio_buzzer_on	4	static
+../Src/gpio.c:77:6:gpio_buzzer_off	4	static
