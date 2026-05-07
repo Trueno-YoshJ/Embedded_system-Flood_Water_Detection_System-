@@ -1,0 +1,6 @@
+../Src/gpio.c:13:6:gpio_init	1
+../Src/gpio.c:52:6:gpio_trigger_high	2
+../Src/gpio.c:59:6:gpio_trigger_low	2
+../Src/gpio.c:66:5:gpio_read_echo	2
+../Src/gpio.c:73:6:gpio_buzzer_on	1
+../Src/gpio.c:77:6:gpio_buzzer_off	1
