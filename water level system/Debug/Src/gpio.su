@@ -1,6 +1,8 @@
 ../Src/gpio.c:13:6:gpio_init	4	static
-../Src/gpio.c:52:6:gpio_trigger_high	16	static
-../Src/gpio.c:59:6:gpio_trigger_low	16	static
-../Src/gpio.c:66:5:gpio_read_echo	16	static
-../Src/gpio.c:73:6:gpio_buzzer_on	4	static
-../Src/gpio.c:77:6:gpio_buzzer_off	4	static
+../Src/gpio.c:58:6:gpio_trigger_high	16	static
+../Src/gpio.c:65:6:gpio_trigger_low	16	static
+../Src/gpio.c:72:15:gpio_read_echo	16	static
+../Src/gpio.c:79:6:gpio_buzzer_on	4	static
+../Src/gpio.c:83:6:gpio_buzzer_off	4	static
+../Src/gpio.c:87:6:gpio_vl53l0x_xshut_high	4	static
+../Src/gpio.c:91:6:gpio_vl53l0x_xshut_low	4	static

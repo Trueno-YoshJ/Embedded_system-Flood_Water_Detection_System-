@@ -1,4 +1,5 @@
 #include "ssd1306.h"
+#include "font.h"
 
 // ── Frame buffer: 128 x 64 = 1024 bytes (8 pages x 128) ──
 static unsigned char ssd1306_buffer[SSD1306_WIDTH * SSD1306_PAGES];
@@ -176,4 +177,25 @@ void ssd1306_set_cursor(unsigned char col, unsigned char page) {
 
 void ssd1306_write_data(unsigned char data) {
     ssd1306_data(data);
+}
+
+static void ssd1306_write_char(char c) {
+    if (c < 32 || c > 'Z') {
+        c = ' ';
+    }
+
+    const unsigned char *glyph = font5x7[(unsigned char)c - 32];
+    for (unsigned char i = 0; i < 5; i++) {
+        ssd1306_data(glyph[i]);
+    }
+
+    // 1 column spacing between glyphs
+    ssd1306_data(0x00);
+}
+
+void ssd1306_write_text(unsigned char col, unsigned char page, const char *text) {
+    ssd1306_set_cursor(col, page);
+    while (*text) {
+        ssd1306_write_char(*text++);
+    }
 }

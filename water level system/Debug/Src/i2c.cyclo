@@ -1,4 +1,9 @@
-../Src/i2c.c:29:6:i2c_init	1
-../Src/i2c.c:46:6:i2c_scan	7
-../Src/i2c.c:73:6:i2c_write	6
-../Src/i2c.c:94:6:i2c_read	10
+../Src/i2c.c:41:6:i2c_init	1
+../Src/i2c.c:82:13:i2c_clear_bus_error	2
+../Src/i2c.c:95:6:i2c_scan	8
+../Src/i2c.c:137:6:i2c_write	6
+../Src/i2c.c:160:6:i2c_read	13
+../Src/i2c.c:218:6:i2c_write_reg8	16
+../Src/i2c.c:284:6:i2c_read_reg8	31
+../Src/i2c.c:415:6:i2c_write_reg16	7
+../Src/i2c.c:439:6:i2c_read_reg16	14

@@ -4,4 +4,5 @@
 "./Src/ssd1306.o"
 "./Src/syscalls.o"
 "./Src/sysmem.o"
+"./Src/vl53l0x.o"
 "./Startup/startup_stm32f103c8tx.o"

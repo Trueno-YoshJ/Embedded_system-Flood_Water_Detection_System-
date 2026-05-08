@@ -47,23 +47,29 @@ void gpio_init(void) {
     GPIOB_CRL |=  (1U << 1);
     GPIOB_CRL &= ~(1U << 2);
     GPIOB_CRL &= ~(1U << 3);
+
+    // PB1 = output push-pull 50MHz (VL53L0X XSHUT) → 0011
+    GPIOB_CRL |=  (1U << 4);
+    GPIOB_CRL |=  (1U << 5);
+    GPIOB_CRL &= ~(1U << 6);
+    GPIOB_CRL &= ~(1U << 7);
 }
 
-void gpio_trigger_high(int sensor) {
+void gpio_trigger_high(unsigned char sensor) {
     if (sensor == 1)
         GPIOA_ODR |= (1U << 0);   // PA0 HIGH → trig1
     else
         GPIOA_ODR |= (1U << 2);   // PA2 HIGH → trig2
 }
 
-void gpio_trigger_low(int sensor) {
+void gpio_trigger_low(unsigned char sensor) {
     if (sensor == 1)
         GPIOA_ODR &= ~(1U << 0);  // PA0 LOW → trig1
     else
         GPIOA_ODR &= ~(1U << 2);  // PA2 LOW → trig2
 }
 
-int gpio_read_echo(int sensor) {
+unsigned char gpio_read_echo(unsigned char sensor) {
     if (sensor == 1)
         return (GPIOA_IDR & (1U << 1)) ? 1 : 0;  // read PA1
     else
@@ -76,4 +82,12 @@ void gpio_buzzer_on(void) {
 
 void gpio_buzzer_off(void) {
     GPIOB_ODR &= ~(1U << 0);  // PB0 LOW
+}
+
+void gpio_vl53l0x_xshut_high(void) {
+    GPIOB_ODR |= (1U << 1);   // PB1 HIGH - Enable VL53L0X
+}
+
+void gpio_vl53l0x_xshut_low(void) {
+    GPIOB_ODR &= ~(1U << 1);  // PB1 LOW - Disable VL53L0X
 }

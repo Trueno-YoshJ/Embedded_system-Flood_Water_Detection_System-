@@ -10,7 +10,8 @@ C_SRCS += \
 ../Src/main.c \
 ../Src/ssd1306.c \
 ../Src/syscalls.c \
-../Src/sysmem.c 
+../Src/sysmem.c \
+../Src/vl53l0x.c 
 
 OBJS += \
 ./Src/gpio.o \
@@ -18,7 +19,8 @@ OBJS += \
 ./Src/main.o \
 ./Src/ssd1306.o \
 ./Src/syscalls.o \
-./Src/sysmem.o 
+./Src/sysmem.o \
+./Src/vl53l0x.o 
 
 C_DEPS += \
 ./Src/gpio.d \
@@ -26,7 +28,8 @@ C_DEPS += \
 ./Src/main.d \
 ./Src/ssd1306.d \
 ./Src/syscalls.d \
-./Src/sysmem.d 
+./Src/sysmem.d \
+./Src/vl53l0x.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -36,7 +39,7 @@ Src/%.o Src/%.su Src/%.cyclo: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/gpio.cyclo ./Src/gpio.d ./Src/gpio.o ./Src/gpio.su ./Src/i2c.cyclo ./Src/i2c.d ./Src/i2c.o ./Src/i2c.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/ssd1306.cyclo ./Src/ssd1306.d ./Src/ssd1306.o ./Src/ssd1306.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su
+	-$(RM) ./Src/gpio.cyclo ./Src/gpio.d ./Src/gpio.o ./Src/gpio.su ./Src/i2c.cyclo ./Src/i2c.d ./Src/i2c.o ./Src/i2c.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/ssd1306.cyclo ./Src/ssd1306.d ./Src/ssd1306.o ./Src/ssd1306.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/vl53l0x.cyclo ./Src/vl53l0x.d ./Src/vl53l0x.o ./Src/vl53l0x.su
 
 .PHONY: clean-Src
 

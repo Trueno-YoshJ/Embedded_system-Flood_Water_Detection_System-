@@ -62,5 +62,6 @@ void ssd1306_clear(void);
 void ssd1306_set_cursor(unsigned char col, unsigned char page);
 void ssd1306_write_data(unsigned char data);
 void ssd1306_fill(unsigned char pattern);
+void ssd1306_write_text(unsigned char col, unsigned char page, const char *text);
 
 #endif /* SSD1306_H_ */

@@ -1,0 +1,11 @@
+../Src/vl53l0x.c:46:13:delay_ms	3
+../Src/vl53l0x.c:57:13:wr	1
+../Src/vl53l0x.c:61:22:rd	1
+../Src/vl53l0x.c:73:22:i2c_bus_is_present_at_addr	3
+../Src/vl53l0x.c:90:13:vl53l0x_data_init	1
+../Src/vl53l0x.c:108:22:vl53l0x_verify_model_id	3
+../Src/vl53l0x.c:122:13:vl53l0x_static_init	1
+../Src/vl53l0x.c:223:13:vl53l0x_perform_single_ref_calibration	3
+../Src/vl53l0x.c:253:6:vl53l0x_init	2
+../Src/vl53l0x.c:307:15:vl53l0x_is_sensor_detected	1
+../Src/vl53l0x.c:318:14:vl53l0x_read_distance_mm	5

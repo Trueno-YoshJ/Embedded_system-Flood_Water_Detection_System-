@@ -1,1 +1,9 @@
-../Src/main.c:5:5:main	3
+../Src/main.c:54:13:delay_ms	3
+../Src/main.c:58:13:delay_us	3
+../Src/main.c:65:13:uint_to_str	5
+../Src/main.c:78:21:smooth_distance	2
+../Src/main.c:102:21:get_us_distance	6
+../Src/main.c:140:13:update_display_normal	1
+../Src/main.c:170:13:update_display_us_debug	1
+../Src/main.c:198:13:update_display_tof_debug	3
+../Src/main.c:223:5:main	6
