@@ -20,12 +20,6 @@
 #include "ssd1306.h"
 #include "vl53l0x.h"
 
-/* ── Uncomment ONE mode at a time ───────────────────────── */
-#define DEBUG_US_ONLY
-//#define DEBUG_TOF_ONLY
-//#define DEBUG_NORMAL
-/* ────────────────────────────────────────────────────────── */
-
 /* ── Tank / threshold config ────────────────────────────── */
 #define TANK_HEIGHT_CM          18
 #define TANK_HEIGHT_MM          180
@@ -35,6 +29,8 @@
 
 /* Buzzer fires when water is this close to sensor (tank nearly full) */
 #define THRESHOLD_BUZZER_MM     50
+#define LEVEL_SAFE_MM       100
+#define LEVEL_WARNING_MM    50
 
 /* ── Timing ─────────────────────────────────────────────── */
 /* US_TIMEOUT: max echo pulse count before we declare out-of-range.
@@ -70,22 +66,6 @@ static void uint_to_str(unsigned int v, char *buf) {
     int i = 0;
     while (pos > 0) buf[i++] = tmp[--pos];
     buf[i] = '\0';
-}
-
-/* ══════════════════════════════════════════════════════════
- * Smoothing filter — FIX: seeds with first real reading
- * ══════════════════════════════════════════════════════════ */
-static unsigned int smooth_distance(unsigned int new_val) {
-    static unsigned int last        = 0;
-    static unsigned char initialized = 0;
-
-    if (!initialized) {
-        last        = new_val;
-        initialized = 1;
-        return last;
-    }
-    last = (last * 3 + new_val) / 4;
-    return last;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -134,39 +114,7 @@ static unsigned int get_us_distance(int sensor) {
     return cm;
 }
 
-/* ══════════════════════════════════════════════════════════
- * update_display — shows all info on OLED
- * ══════════════════════════════════════════════════════════ */
-static void update_display_normal(unsigned int dist_mm,
-                                   unsigned int us_raw_mm,
-                                   unsigned int tof_mm,
-                                   const char  *active_sensor)
-{
-    char buf[16];
 
-    /* Row 0: title */
-    ssd1306_write_text(0, 0, "WATER LEVEL MON ");
-
-    /* Row 2: final smoothed distance */
-    ssd1306_write_text(0, 2, "DIST:       mm  ");
-    uint_to_str(dist_mm, buf);
-    ssd1306_write_text(36, 2, "      ");   /* clear old */
-    ssd1306_write_text(36, 2, buf);
-
-    /* Row 4: active sensor label */
-    ssd1306_write_text(0, 4, "SEN:            ");
-    ssd1306_write_text(36, 4, active_sensor);
-
-    /* Row 6: raw US mm for reference */
-    ssd1306_write_text(0, 6, "US:         mm  ");
-    uint_to_str(us_raw_mm, buf);
-    ssd1306_write_text(24, 6, "      ");
-    ssd1306_write_text(24, 6, buf);
-}
-
-/* ── Debug display for ultrasonic calibration ────────────── */
-/* ── Debug display for ultrasonic calibration ────────────── */
-/* ── Debug display for ultrasonic calibration ────────────── */
 static void update_display_us_debug(unsigned int raw_count,
                                      unsigned int cm,
                                      unsigned int mm)
@@ -177,58 +125,35 @@ static void update_display_us_debug(unsigned int raw_count,
     ssd1306_clear();
 
     /* TITLE */
-    ssd1306_write_text(0, 0, "US DEBUG MODE");
+    ssd1306_write_text(0, 0, "WATER LEVEL: ");
+    if (mm >= LEVEL_SAFE_MM) {
 
-//    /* RAW COUNT */
-//    ssd1306_write_text(0, 2, "RAW COUNT:");
-//
-//    uint_to_str(raw_count, buf);
-//
-//    ssd1306_write_text(0, 3, buf);
+           ssd1306_write_text(20, 5, "SAFE");
 
+       }
+       else if (mm >= LEVEL_WARNING_MM) {
+
+           ssd1306_write_text(20, 5, "WARNING");
+
+       }
+       else {
+
+           ssd1306_write_text(20, 5, "CRITICAL !!!");
+
+       }
     /* DISTANCE CM */
-    ssd1306_write_text(0, 5, "DIST CM:");
+    ssd1306_write_text(0, 6, "DIST CM:");
 
     uint_to_str(cm, buf);
 
-    ssd1306_write_text(0, 3, buf);
+    ssd1306_write_text(20, 3, buf);
 }
 
-/* ── Debug display for TOF calibration ───────────────────── */
-static void update_display_tof_debug(unsigned int tof_mm)
-{
-    char buf[16];
 
-    ssd1306_write_text(0, 0, "TOF DEBUG MODE  ");
-
-    ssd1306_write_text(0, 3, "DIST:           ");
-    uint_to_str(tof_mm, buf);
-    ssd1306_write_text(36, 3, "      ");
-    ssd1306_write_text(36, 3, buf);
-    ssd1306_write_text(90, 3, "mm");
-
-    /* Basic sanity indicator */
-    if (tof_mm == 0) {
-        ssd1306_write_text(0, 5, "SENSOR ERR      ");
-    } else if (tof_mm > 2000) {
-        ssd1306_write_text(0, 5, "OUT OF RANGE    ");
-    } else {
-        ssd1306_write_text(0, 5, "OK              ");
-    }
-}
-
-/* ══════════════════════════════════════════════════════════
- * main
- * ══════════════════════════════════════════════════════════ */
 int main(void) {
 
     /* ── Hardware init ───────────────────────────────────── */
     gpio_init();
-
-    gpio_vl53l0x_xshut_low();
-    delay_ms(50);
-    gpio_vl53l0x_xshut_high();
-    delay_ms(200);
 
     i2c_init();
     i2c_scan();
@@ -237,11 +162,11 @@ int main(void) {
     ssd1306_clear();
 
     /* ── Show I2C scan result ────────────────────────────── */
-    ssd1306_write_text(0, 0, "I2C SCAN:");
+    ssd1306_write_text(30, 0, "I2C SCAN");
 
     char addr_buf[8];
     if (found_count == 0) {
-        ssd1306_write_text(0, 2, "NO DEVICES!");
+        ssd1306_write_text(0, 6, "NO DEVICES!");
     } else {
         addr_buf[0] = '0' + found_count;
         addr_buf[1] = ' ';
@@ -250,17 +175,18 @@ int main(void) {
         addr_buf[4] = 'V';
         addr_buf[5] = 'S';
         addr_buf[6] = '\0';
-        ssd1306_write_text(0, 2, addr_buf);
+        ssd1306_write_text(20, 3, addr_buf);
 
         /* Print each found address */
         char hex[] = "0123456789ABCDEF";
         char txt[6];
         for (int i = 0; i < found_count && i < 4; i++) {
-            txt[0] = '0'; txt[1] = 'x';
+            txt[0] = '0'; txt[1] = 'X';
             txt[2] = hex[(found_addresses[i] >> 4) & 0x0F];
             txt[3] = hex[found_addresses[i] & 0x0F];
             txt[4] = ' '; txt[5] = '\0';
-            ssd1306_write_text(i * 36, 4, txt);
+            ssd1306_write_text(0,5,"ADDRESSES : ");
+            ssd1306_write_text(i * 36, 6, txt);
         }
     }
 
@@ -270,20 +196,11 @@ int main(void) {
     ssd1306_clear();
     ssd1306_write_text(0, 2, "INIT TOF...");
 
-#if !defined(DEBUG_US_ONLY)
-    vl53l0x_init();
-#endif
-
     ssd1306_clear();
     ssd1306_write_text(0, 2, "SYSTEM READY");
 
-#if defined(DEBUG_US_ONLY)
-    ssd1306_write_text(0, 4, "MODE: US ONLY");
-#elif defined(DEBUG_TOF_ONLY)
-    ssd1306_write_text(0, 4, "MODE: TOF ONLY");
-#else
-    ssd1306_write_text(0, 4, "MODE: NORMAL");
-#endif
+    ssd1306_write_text(0, 4, "MODE: HC_SR04");
+
 
     delay_ms(2000);
     ssd1306_clear();
@@ -292,9 +209,6 @@ int main(void) {
      * Main loop
      * ════════════════════════════════════════════════════════ */
     while (1) {
-
-/* ── MODE 1: Ultrasonic isolation + calibration ───────────── */
-#if defined(DEBUG_US_ONLY)
 
         unsigned int us_cm  = get_us_distance(1);
         unsigned int us_mm  = (us_cm == 999) ? 9999 : us_cm * 10;
@@ -309,70 +223,6 @@ int main(void) {
 
         delay_ms(300);
 
-/* ── MODE 2: TOF isolation ────────────────────────────────── */
-#elif defined(DEBUG_TOF_ONLY)
-
-        unsigned int tof_mm = vl53l0x_read_distance_mm();
-
-        /* Clamp garbage readings */
-        if (tof_mm > 2000) tof_mm = 9999;
-
-        update_display_tof_debug(tof_mm);
-
-        if (tof_mm < THRESHOLD_BUZZER_MM && tof_mm != 9999)
-            gpio_buzzer_on();
-        else
-            gpio_buzzer_off();
-
-        delay_ms(200);
-
-/* ── MODE 3: Full system — all fixes applied ──────────────── */
-#else /* DEBUG_NORMAL */
-
-        unsigned int us_cm     = 0;
-        unsigned int us_mm     = 0;
-        unsigned int tof_mm    = 0;
-        unsigned int final_mm  = 0;
-        const char  *active    = "US ";
-
-        /* 1. Read ultrasonic → mm */
-        us_cm = get_us_distance(1);
-        us_mm = (us_cm == 999) ? 9999 : us_cm * 10;
-
-        /* 2. Sensor selection
-         *    FIX: threshold is 900mm (90cm), was incorrectly 90mm (9cm) */
-        if (us_mm <= THRESHOLD_CROSSOVER_MM && us_mm != 9999) {
-
-            /* Close range → TOF */
-            tof_mm = vl53l0x_read_distance_mm();
-            if (tof_mm > 2000) tof_mm = 0;
-
-            final_mm = tof_mm;
-            active   = "TOF";
-
-        } else {
-
-            /* Long range → Ultrasonic */
-            final_mm = us_mm;
-            active   = "US ";
-        }
-
-        /* 3. Smooth — FIX: seeded with first real reading */
-        final_mm = smooth_distance(final_mm);
-
-        /* 4. Display */
-        update_display_normal(final_mm, us_mm, tof_mm, active);
-
-        /* 5. Buzzer: fires when dist < 30mm (tank nearly full) */
-        if (final_mm < THRESHOLD_BUZZER_MM)
-            gpio_buzzer_on();
-        else
-            gpio_buzzer_off();
-
-        /* 6. Update rate */
-        delay_ms(200);
-
-#endif /* mode select */
 
     } /* while(1) */
 
